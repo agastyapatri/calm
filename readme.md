@@ -1,0 +1,98 @@
+#   CaLM 
+`calm` is a small C library for making chat completion requests to [OpenRouter](https://openrouter.ai). `calm` uses `libcurl` and `cJSON` as its main dependencies.
+
+
+## Project Structure
+
+```text 
+calm/ 
+    - src/
+        - cJSON.h 
+        - cJSON.c 
+        - .... other source files.
+    - main.c 
+    - readme.md
+    - CMakeLists.txt 
+```
+
+##  Roadmap
+1.  **Raw HTTP, no libraries**
+-   Write a single `main.c` file that makes one hardcoded `POST` request to OpenRouter using libcurl directly. 
+-   Learn: `curl_easy_init/curl_easy_setopt/curl_easy_perform`, headers via `curl_slist`, the CURLOPT_WRITEFUNCTIO callback and how libcurl response bytes are streamed back. 
+-   Goal: see a real API response on the screen. No structure yet.
+
+2.  **Parse the JSON Response** 
+-   Feed that raw JSON into cJSON and pull out the message content. 
+-   Learn: cJSON's parse/get-object-item API, and JSON ownership rules (what you must `Delete()`).
+-   Goal: print out the model's reply text, cleanly. 
+
+3.  **Encapsulate: The `client` struct** 
+-   Wrap the curl handle + API key + model into an opaque `calm_client` with `calm_client_create()` and `calm_client_destroy()`.
+-   Learn the opaque pointer pattern, heder/implementation separation, why the curl handle must persist across all calls instead of being recreated each time. 
+-   Goal: `main.c` only includes `calm.h` and never touches curl or cJSON directly.
+
+4.  **Clean request/response types** 
+-   Design a `calm_response` struct with content, error, http_status as the return type of the chat function. 
+-   Learn how to design an error handling convention across a C API boundary (no exceptions - sentinel values, out params or struct-with-error-field).
+
+5.  **Hardening (stretch)** 
+-   Timeouts, retry on transient failure, streaming responses, thread safety notes. 
+-   Learn `CURLOPT_TIMEOUT`, introduce yourself to `curl_multi`. 
+
+
+
+##  **Notes** 
+Things that I need to know before diving head-first into code. 
+### **HTTP and `libcurl`** 
+1.  A HTTP request has a few parts: 
+-   **Method** : `POST` will be used to send data / trigger something on the server. `GET` might be used to retrieve something from the server. 
+-   **URL**: OpenRouter Base URL. 
+-   **Headers:** metadata about the request, sent as `key:value` pairs.  `Authorization: Bearer <api-key>` proves the authenticity of the client making the request and `Content-Type: application/json` tells the server that the body of the request is a JSON payload.
+-   **Body:** The actual JSON payload describing the request being made. 
+
+2.  The server sends back a HTTP response: a status code (200 meaning success, 401 meaning bad auth, etc.), it's own headers and body, which in this case will be JSON containing the model's reply.
+
+
+3.  `libcurl`'s API is built around once core object, a `CURL*` handle, which is configured step by step via `curl_easy_setopt(handle, OPTION, value)` calls. This handle is then fired with `curl_easy_perform(handle)`. 
+
+
+4.  `libcurl` doesn't return a string when `curl_easy_perform()` finishes. Instead, *the user gives it a callback function *before* the call, and libcurl invokes that callback itself, possibly multiple times, as response data arrives*. The user is responsible for accumulating the incoming data into their own buffer. This pattern is found in many libraries (HTTP libs, GUI toolkits, audio APIs - anywhere a lower layers needs to hand data back to the user asynchronously.)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

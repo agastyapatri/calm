@@ -1,0 +1,7 @@
+.env 
+build/ 
+cmake/ 
+.cmake 
+*.out 
+*.o 
+*.a 
