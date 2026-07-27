@@ -5,6 +5,7 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 add_executable(calm 
 	main.c 
 	src/cJSON.c
+	src/calm.c
 )
 target_compile_options(calm PRIVATE -Wall -Wextra)
 target_include_directories(calm PRIVATE src)

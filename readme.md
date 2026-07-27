@@ -61,7 +61,11 @@ Things that I need to know before diving head-first into code.
 
 
 
+### **Error handling**
+`calm` uses a set of error codes defined in `enum CALM_STATUS`. It is guaranteed that upon failure, the target structure will be safe to inspect and will have the necessary parameters be `NULL`. 
 
+Upon any non-`CALM_OK` status from `calm_client_chat`, `content` is guaranteed `NULL` for `struct calm_response`. 
+`error` and `http_status` are populated whenever they are known.
 
 
 
