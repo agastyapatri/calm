@@ -18,6 +18,12 @@ typedef enum {
 	CALM_ERR_ALLOC, 			//	memory related errors.
 } calm_status;
 
+
+
+
+
+
+
 typedef struct calm_client  calm_client;
 
 calm_status calm_client_create(const char* api_key, const char* model, calm_client** out);
@@ -36,7 +42,7 @@ calm_status calm_client_chat(calm_client *client, const char* prompt, calm_respo
 
 
 //	Reads a .env style file. Values are stored in out_values
-calm_status calm_env_get(const char* path, const char* key, char **out_values);
+calm_status calm_env_get(const char* path, const char* key, char **out_value);
 
 
 

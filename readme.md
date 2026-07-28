@@ -66,12 +66,14 @@ Things that I need to know before diving head-first into code.
 
 Upon any non-`CALM_OK` status from `calm_client_chat`, `content` is guaranteed `NULL` for `struct calm_response`. 
 `error` and `http_status` are populated whenever they are known.
+--------------------------
 
+### **Client**
+`calm_client`: is the object that represents one configured connection to OpenRouter. It is the structure that remembers the user API key, model name, base url and the resuable curl handle, so that curl is not being initialized repeatedly. Think of it as an `fopen()` for the API connection. 
 
+`calm_client` is being made an *opaque pointer* by making sure that the header file only contains the forward declaration of the struct. The user *must* go throught `calm_client_create()`, `calm_client_chat()`, `calm_client_destroy()`. This enforces necessary information-hiding at the compiler level. In `main.c` or any other translation unit, the user **cannot** call `client->api_key`. 
 
-
-
-
+This is why `calm_client_create` has to operate on a pointer (`calm_client** out`) rather than return a struct by value.
 
 
 
