@@ -7,6 +7,7 @@ typedef enum {
 
 	CALM_ERR_ENV_NOT_FOUND, 	//	.env file not found
 	CALM_ERR_ENV_VAR_MISSING, 	//	.env file exists, but the variable does not exist
+	CALM_ERR_MALFORMED_VAR,		//	.env file contains malformed entries
 	CALM_ERR_CURL_INIT, 		//	failure in initialzing curl 
 	CALM_ERR_CURL_REQUEST,		//	failure in the curl request itself. 
 	CALM_ERR_HTTP_UNAUTHORIZED, //	HTTP 401
