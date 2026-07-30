@@ -55,3 +55,33 @@ calm_status calm_env_get(const char* path, const char* key, char **out_value){
 	*out_value = NULL;
 	return CALM_ERR_ENV_VAR_MISSING;
 }
+
+
+calm_status calm_buffer_init(calm_buffer* buf){
+	buf->data = NULL;
+	buf->size = 0; 
+	return CALM_OK;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

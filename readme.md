@@ -18,7 +18,7 @@ calm/
 ##  Roadmap
 1.  **Raw HTTP, no libraries**
 -   Write a single `main.c` file that makes one hardcoded `POST` request to OpenRouter using libcurl directly. 
--   Learn: `curl_easy_init/curl_easy_setopt/curl_easy_perform`, headers via `curl_slist`, the CURLOPT_WRITEFUNCTIO callback and how libcurl response bytes are streamed back. 
+-   Learn: `curl_easy_init/curl_easy_setopt/curl_easy_perform`, headers via `curl_slist`, the CURLOPT_WRITEFUNCTION callback and how libcurl response bytes are streamed back. 
 -   Goal: see a real API response on the screen. No structure yet.
 
 2.  **Parse the JSON Response** 
@@ -64,8 +64,7 @@ Things that I need to know before diving head-first into code.
 ### **Error handling**
 `calm` uses a set of error codes defined in `enum CALM_STATUS`. It is guaranteed that upon failure, the target structure will be safe to inspect and will have the necessary parameters be `NULL`. 
 
-Upon any non-`CALM_OK` status from `calm_client_chat`, `content` is guaranteed `NULL` for `struct calm_response`. 
-`error` and `http_status` are populated whenever they are known.
+    Upon any non-`CALM_OK` status from `calm_client_chat`, `content` is guaranteed `NULL` for `struct calm_response`. `error` and `http_status` are populated whenever they are known.
 --------------------------
 
 ### **Client**
@@ -75,9 +74,23 @@ Upon any non-`CALM_OK` status from `calm_client_chat`, `content` is guaranteed `
 
 This is why `calm_client_create` has to operate on a pointer (`calm_client** out`) rather than return a struct by value.
 
+#### `libcurl` and function pointers. 
+A function pointer is a variable that holds the memory address of a function instead of a type or a struct. The syntax to declare a function pointer is: 
+```c
+type (*variable_name)(type)
 
+int (*ptr)(int) = NULL; //  a pointer to a function which takes in an int and returns an int.
+```
+A function pointer does not really care which function it points to as long as the function has the correct signature. 
 
+**Why does this matter for `libcurl`**: `curl_easy_setopt(handle CURLOPT_WRITEFUNCTION, callback_function)` uses the user defined `callback_function` and calls it multiple times internally, whenever data arrives. `callback_function` must have the signature that `libcurl` expects.  
 
+The function signature expected by `curl_easy_setopt` is: `size_t write_callback(void* contents, size_t size, size_t nmemb, void* userp);
+`
+-   `void* contents`: pointer to the chunk of response data that libcurl just received. 
+-   `size_t size, nmbem`: the actual byte count of the incoming chunk is `size * nmemb`. 
+-   `void* userp`: This is the user provided pointer that libcurl returns back on every call so that the user can accumulate the data across multiple calls. 
+-   The function must return the number of bytes actually processed. 
 
 
 
