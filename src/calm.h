@@ -7,7 +7,6 @@
 //	calm errors and return codes. 
 typedef enum {
 	CALM_OK = 0, 
-
 	CALM_ERR_ENV_NOT_FOUND, 	//	.env file not found
 	CALM_ERR_ENV_VAR_MISSING, 	//	.env file exists, but the variable does not exist
 	CALM_ERR_MALFORMED_VAR,		//	.env file contains malformed entries
@@ -24,7 +23,7 @@ typedef enum {
 
 
 static inline const char* _calm_str_err(calm_status status_code){
-	if(status_code == CALM_ERR_ENV_NOT_FOUND)	 return "Target environment file not found";
+	if(status_code == CALM_ERR_ENV_NOT_FOUND)	 return "Target environment file not found\n";
 	if(status_code == CALM_ERR_ENV_VAR_MISSING)	 return "Target environment variable not found.\n";
 	if(status_code == CALM_ERR_MALFORMED_VAR)	 return "Target environment variable is malformed.\n";
 	if(status_code == CALM_ERR_CURL_INIT)	     return "Error in initializing cURL.\n";
@@ -41,10 +40,12 @@ static inline const char* _calm_str_err(calm_status status_code){
 
 
 
-#define CALM_CHECK(status)	if(status != CALM_OK){							                                 \
-									fprintf(stderr, "Error in calm: %d; %s\n", status, _calm_str_err(status));\
-									return 1;									                             \
-								}												                             \
+#define CALM_CHECK(status, optional_free)											  \
+		if(status != CALM_OK){							                              \
+			fprintf(stderr, "Error in calm: %d; %s", status, _calm_str_err(status));\
+			if(optional_free != NULL)	free(optional_free);						  \
+			return 1;									                              \
+		}												                              \
 
 
 

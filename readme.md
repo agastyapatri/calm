@@ -93,7 +93,9 @@ The function signature expected by `curl_easy_setopt` is: `size_t write_callback
 -   The function must return the number of bytes actually processed. 
 
 
+When `curl_easy_perform()` is called, libcurl opens a TCP connection, does the HTTPS handshake, sends the request, starts receiving the response. This response comes over the network as a stream of bytes in the form of packets / chunks depending on the size of the data and the condition of the network. 
 
+The callback's job, every single time it is called by libcurl, is to take whatever bytes libcurl has received and append them to the data that it has already received. `calm_buffer` is an ever-growing structure which collects the data received by libcurl. 
 
 
 

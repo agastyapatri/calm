@@ -64,6 +64,19 @@ calm_status calm_buffer_init(calm_buffer* buf){
 }
 
 
+size_t write_callback(void* contents, size_t size, size_t nmemb, void* userp){
+	size_t real_size = size * nmemb;
+	calm_buffer* buf = (calm_buffer*)userp;
+	char* new_data = realloc(buf->data, buf->size + real_size + 1);
+	if(!new_data){
+		return 0;
+	}
+	buf->data = new_data;
+	memcpy(buf->data + buf->size, contents, real_size);
+	buf->size += real_size;
+	buf->data[buf->size] = '\0';
+	return real_size;
+}
 
 
 
