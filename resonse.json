@@ -1,1 +1,4 @@
-{"id":"gen-1785459031-O3UFgm0uHBZRFu4jNaGM","object":"chat.completion","created":1785459031,"model":"nvidia/nemotron-3-nano-30b-a3b:free","provider":"Nvidia","system_fingerprint":null,"service_tier":null,"choices":[{"index":0,"logprobs":null,"finish_reason":"stop","native_finish_reason":"stop","message":{"role":"assistant","content":"The capital of France is **Paris**.","refusal":null,"reasoning":"The user asks a simple question: What is the capital of France? The answer is Paris. Provide a concise answer.\n","reasoning_details":[{"type":"reasoning.text","text":"The user asks a simple question: What is the capital of France? The answer is Paris. Provide a concise answer.\n","format":"unknown","index":0}]}}],"usage":{"prompt_tokens":23,"completion_tokens":35,"total_tokens":58,"cost":0,"is_byok":false,"prompt_tokens_details":{"cached_tokens":0,"cache_write_tokens":0,"audio_tokens":0,"video_tokens":0},"cost_details":{"upstream_inference_cost":0,"upstream_inference_prompt_cost":0,"upstream_inference_completions_cost":0},"completion_tokens_details":{"reasoning_tokens":29,"image_tokens":0,"audio_tokens":0}}}
+{
+	"name": "Agastya",
+	"age" : "25"
+}
