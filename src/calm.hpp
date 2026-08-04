@@ -1,85 +1,79 @@
-#ifndef CALM_H
-#define CALM_H
-#include <curl/curl.h> 
-#include <cJSON.h> 
+#ifndef CALM_SRC_CALM_HPP
+#define CALM_SRC_CALM_HPP 
+#include <string>
+#include <nlohmann/json.hpp>
+#include <vector>
+using json = nlohmann::json;
 
+namespace calm{
 
-//	calm errors and return codes. 
+//	calm error codes for all sorts of errors
 typedef enum {
-	CALM_OK = 0, 
-	CALM_ERR_ENV_NOT_FOUND, 	//	.env file not found
-	CALM_ERR_ENV_VAR_MISSING, 	//	.env file exists, but the variable does not exist
-	CALM_ERR_MALFORMED_VAR,		//	.env file contains malformed entries
-	CALM_ERR_CURL_INIT, 		//	failure in initialzing curl 
-	CALM_ERR_CURL_REQUEST,		//	failure in the curl request itself. 
-	CALM_ERR_HTTP_UNAUTHORIZED, //	HTTP 401
-	CALM_ERR_HTTP_RATE_LIMIT, 	//	HTTP 429 
-	CALM_ERR_HTTP_SERVER, 		//	HTTP 5xx 
-	CALM_ERR_HTTP_OTHER, 		//	any other HTTP failure
-	CALM_ERR_JSON_PARSE, 		//	error in parsing JSON (includes invalid JSON errors in the body)
-	CALM_ERR_JSON_UNEXPECTED, 	//	unexpected shape in valid JSON
-	CALM_ERR_ALLOC, 			//	memory related errors.
-} calm_status;
+	CALM_OK,
+	CALM_ERR_FILE_NOT_FOUND,
+	CALM_ERR_VAR_NOT_FOUND,
+	CALM_ERR_ENV_FORMAT, 
+
+} CALM_STATUS;
 
 
-static inline const char* _calm_str_err(calm_status status_code){
-	if(status_code == CALM_ERR_ENV_NOT_FOUND)	 return "Target environment file not found\n";
-	if(status_code == CALM_ERR_ENV_VAR_MISSING)	 return "Target environment variable not found.\n";
-	if(status_code == CALM_ERR_MALFORMED_VAR)	 return "Target environment variable is malformed.\n";
-	if(status_code == CALM_ERR_CURL_INIT)	     return "Error in initializing cURL.\n";
-	if(status_code == CALM_ERR_CURL_REQUEST)	 return "Error in cURL request.\n";
-	if(status_code == CALM_ERR_HTTP_UNAUTHORIZED)return "HTTP err. 401; Unauthorized.\n";
-	if(status_code == CALM_ERR_HTTP_RATE_LIMIT)	 return "HTTP err. 429; Rate Limited.\n";
-	if(status_code == CALM_ERR_HTTP_SERVER)	     return "HTTP err. 5xx; Server Error.\n";
-	if(status_code == CALM_ERR_HTTP_OTHER)	     return "Misc. HTTP Error.\n";
-	if(status_code == CALM_ERR_JSON_PARSE)	     return "Error in parsing JSON.\n";
-	if(status_code == CALM_ERR_JSON_UNEXPECTED)	 return "Unexpected Shape in Valid JSON.\n";
-	if(status_code == CALM_ERR_ALLOC)	         return "Memory allocation error; NULL received.\n";
-	return NULL;
+//	reading var_name from path_to_env
+CALM_STATUS load_dotenv(std::string path_to_env);
+
+//	TODO
+class ChatModel;
+class ChatMessage;
+
+
+//	base(?) class for chat models
+class ChatModel{
+private: 
+	std::string _api_key; 
+	std::string _model_name; 
+	std::string _base_url;
+	std::string _model_provider;
+	float _temperature;
+	int _max_tokens;
+public:
+	ChatModel() = default;
+	ChatModel(std::string api_key, std::string model_name, std::string base_url, float temperature = 0.0, int max_tokens = 1024): 
+		_api_key(api_key), _model_name(model_name),_base_url(base_url), _temperature(temperature), _max_tokens(max_tokens){};
+	void set_api_key    (std::string key) {_api_key = key;}
+	void set_model_name (std::string name){_model_name = name;}
+	void set_base_url   (std::string url) {_base_url = url;}
+	void set_temperature(float temp) 	  {_temperature = temp;}
+	void set_max_tokens (int tokens) 	  {_max_tokens = tokens;}
+
+	const std::string model_name() const {return _model_name;}
+	const std::string base_url  () const {return _base_url  ;}
+	float temperature() const {return _temperature;}
+	int   max_tokens()  const {return _max_tokens ;}
+
+
+
+
+
+
+
+
+	// TODO
+	std::string invoke(std::string content);
+
+
+
+
+
+	// ChatMessage invoke(std::vector<std::string>);
+};
+
+
+
+
+
+
+
+
 }
 
 
-
-#define CALM_CHECK(status, optional_free)											  \
-		if(status != CALM_OK){							                              \
-			fprintf(stderr, "Error in calm: %d; %s", status, _calm_str_err(status));\
-			if(optional_free != NULL)	free(optional_free);						  \
-			return 1;									                              \
-		}												                              \
-
-
-
-
-typedef struct calm_client  calm_client;
-
-calm_status calm_client_create(const char* api_key, const char* model, calm_client** out);
-void calm_client_destroy(calm_client* client);
-
-typedef struct {
-	char* content; 		//	the model's reply text, NULL on failure
-	char* error; 		//	human-readable erro message, NULL on success 
-	int http_status; 	//	0 if no HTTP response was received.
-} calm_response;
-void calm_response_destroy(calm_response* response);
-
-
-
-calm_status calm_client_chat(calm_client *client, const char* prompt, calm_response *out);
-
-
-//	Reads a .env style file. Values are stored in out_values
-calm_status calm_env_get(const char* path, const char* key, char **out_value);
-
-typedef struct {
-	char* data; 
-	size_t size; 
-} calm_buffer;
-calm_status calm_buffer_init(calm_buffer* buf);
-
-size_t write_callback(void* contents, size_t size, size_t nmemb, void* userp);
-
-
-
-
-
-#endif /* ifndef CALM_H */
+#endif // !CALM_SRC_CALM_HPP

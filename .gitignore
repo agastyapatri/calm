@@ -2,6 +2,7 @@
 build/ 
 cmake/ 
 .cmake 
+main
 *.out 
 *.o 
 *.a 

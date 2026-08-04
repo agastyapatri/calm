@@ -17,9 +17,20 @@ Some simple features include:
 Example / Intended usage is very simple to how some aspects of `langchain_core` work: 
 
 ```cpp
-calm::ChatModel llm = calm::init_chat_model(model = MODEL_NAME, model_provider = PROVIDER_NAME, api_key = API_KEY, base_url = BASE_URL); 
+calm::ChatModel llm = calm::init_chat_model(
+    model = MODEL_NAME, 
+    model_provider = PROVIDER_NAME, 
+    api_key = API_KEY, 
+    base_url = BASE_URL
+); 
 messages = std::string("Hello!");
-calm::ChatResponse response = llm.invoke(messages);
+calm::ChatMessage response = llm.invoke(messages);
 std::cout << response.content << std::endl;
 ```
+
+
+##  Roadmap
+1.  DONE: ~Safely read environment variables from the  `.env` file~.
+2.  Build the first request: figure out what is needed from `libcpr` to build the first GET request to OpenRouter
+3.  UNDERWAY: build `calm::ChatModel` as a wrapper around the OpenRouter API. 
 

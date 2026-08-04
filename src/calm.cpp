@@ -1,81 +1,35 @@
-#include "calm.h"
-#include <curl/curl.h> 
-#include <stdlib.h>
-#include <string.h>
-struct calm_client{
-	CURL* curl;
-	char* api_key;
-	char* model;
-};
+#include <calm.hpp> 
+#include <cstdlib>
+#include <cpr/cpr.h>
+#include <fstream> 
+#include <iostream>
 
-calm_status calm_env_get(const char* path, const char* key, char **out_value){
-	FILE* file = fopen(path, "r");
-	if(!file){
-		*out_value = NULL;
-		return CALM_ERR_ENV_NOT_FOUND;
-	} 
-	char line[512];
-	while(fgets(line, sizeof(line), file)){
-		line[strcspn(line, "\n")] = 0;
-		if(line[0] == '\0' || line[0] == '#')	continue;
-		char* delimiter = strchr(line, '=');
-		if(!delimiter){
-			*out_value = NULL;
-			fclose(file);
-			return CALM_ERR_MALFORMED_VAR;
-		} 
-		*delimiter = '\0';
-		char* _key = line; 
-		char* _value = delimiter + 1;
-		if(!strcmp(_key, key)){
-			size_t var_len = strlen(_value);
-			if(!var_len){
-				*out_value = NULL;
-				fclose(file);
-				return CALM_ERR_MALFORMED_VAR;
-			}
-			if((_value[0] == '\"') || (_value[0] == '\'')){
-				_value += 1;
-				var_len = strlen(_value);
-			}	
-			if((var_len > 0) && ((_value[var_len - 1] == '\"') || (_value[var_len - 1] == '\''))){
-				_value[var_len - 1] = '\0';
-			}
-			*out_value = (char*)malloc((strlen(_value) + 1)*sizeof(char));
-			if(!out_value){
-				fclose(file);
-				return CALM_ERR_ALLOC;
-			}
-			strcpy(*out_value, _value);
-			fclose(file);
-			return CALM_OK;
+namespace calm{
+CALM_STATUS load_dotenv(std::string path_to_env){
+	std::string variable = "";
+	std::fstream file(path_to_env);
+	if(!file.is_open())	return CALM_ERR_FILE_NOT_FOUND;
+	std::string line; 
+	while(std::getline(file, line)){
+		if(line.empty() || (line[0] == '#'))	continue;
+		size_t delimiter_pos = line.find("=");
+		size_t quote_pos = std::min(line.find("\""), line.find("\'"));
+		if((delimiter_pos == std::string::npos) || (delimiter_pos > quote_pos))	return CALM_ERR_ENV_FORMAT;
+		std::string key = line.substr(0, delimiter_pos);
+		std::string value = line.substr(delimiter_pos + 1);
+		if(value.size() >= 2 && value.front() == '"' && value.back() == '"'){
+			value = value.substr(1, value.size() - 2);
+
 		}
+		setenv(key.c_str(), value.c_str(), 1);
 	}
-	fclose(file);
-	*out_value = NULL;
-	return CALM_ERR_ENV_VAR_MISSING;
-}
-
-
-calm_status calm_buffer_init(calm_buffer* buf){
-	buf->data = NULL;
-	buf->size = 0; 
 	return CALM_OK;
 }
 
 
-size_t write_callback(void* contents, size_t size, size_t nmemb, void* userp){
-	size_t real_size = size * nmemb;
-	calm_buffer* buf = (calm_buffer*)userp;
-	char* new_data = realloc(buf->data, buf->size + real_size + 1);
-	if(!new_data){
-		return 0;
-	}
-	buf->data = new_data;
-	memcpy(buf->data + buf->size, contents, real_size);
-	buf->size += real_size;
-	buf->data[buf->size] = '\0';
-	return real_size;
+std::string invoke(std::string content){
+	std::string output = "";
+	return output;
 }
 
 
@@ -84,17 +38,4 @@ size_t write_callback(void* contents, size_t size, size_t nmemb, void* userp){
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+}
