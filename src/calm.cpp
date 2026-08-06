@@ -27,10 +27,48 @@ CALM_STATUS load_dotenv(std::string path_to_env){
 }
 
 
-std::string invoke(std::string content){
-	std::string output = "";
-	return output;
+std::string ChatModel::invoke(std::string content){
+	std::string chat_completion_endpoint = _base_url + "chat/completions";
+
+	json payload;
+	payload["max_tokens"] = _max_tokens;
+	payload["model"] = _model_name; 
+	payload["temperature"] = _temperature;
+	payload["messages"] = json::array(); 
+	json user_msg = {{"role", "user"}, {"content", content}}; 
+	payload["messages"].push_back(user_msg);
+
+	cpr::Header req_header{
+		{"Content-Type", "application/json"},
+		{"Authorization", "Bearer " + _api_key},
+	};
+	cpr::Body req_body = cpr::Body(payload.dump(4));
+	cpr::Response r = cpr::Post(
+		cpr::Url(chat_completion_endpoint),
+		req_header, 
+		req_body
+	);
+
+
+
+
+
+
+
+
+	return r.text;
+
+
 }
+
+
+
+cpr::Response ChatModel::list_models(){
+	std::string models_endpoint = _base_url + "models";
+	cpr::Response r = cpr::Get(cpr::Url(models_endpoint));
+	return r;
+}
+
 
 
 

@@ -31,6 +31,14 @@ std::cout << response.content << std::endl;
 
 ##  Roadmap
 1.  DONE: ~Safely read environment variables from the  `.env` file~.
-2.  Build the first request: figure out what is needed from `libcpr` to build the first GET request to OpenRouter
-3.  UNDERWAY: build `calm::ChatModel` as a wrapper around the OpenRouter API. 
+2.  DONE: ~Build the first request: figure out what is needed from `libcpr` to build the first GET request to OpenRouter~
+3.  UNDERWAY: build `calm::ChatModel` as a wrapper around the OpenRouter API. Include more methods in the `ChatOpenRouter` class which interact with some cool endpoints.  
+    
+    Figure out how to send individual `std::string messages`  to `ChatModel.invoke()`
+
+
+The immediate reason to seperate the different model providers into their own `ChatModel` subclasses is that they all probably have their own API endpoints which need to be treated differently (especially when building the JSON payload for each). 
+
+I need to have a  stricter documentation of the status codes of the responses from the OpenRouter API. I need a strict error handling system based on the status codes, right now things are failing silently. This would mean death if anything is built upon this code.
+
 

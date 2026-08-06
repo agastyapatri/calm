@@ -2,10 +2,13 @@
 #define CALM_SRC_CALM_HPP 
 #include <string>
 #include <nlohmann/json.hpp>
+#include <cpr/cpr.h>
 #include <vector>
-using json = nlohmann::json;
 
 namespace calm{
+using json = nlohmann::json;
+
+
 
 //	calm error codes for all sorts of errors
 typedef enum {
@@ -49,21 +52,12 @@ public:
 	float temperature() const {return _temperature;}
 	int   max_tokens()  const {return _max_tokens ;}
 
-
-
-
-
-
-
-
 	// TODO
 	std::string invoke(std::string content);
+	// std::string invoke(std::vector);
 
+	cpr::Response list_models();
 
-
-
-
-	// ChatMessage invoke(std::vector<std::string>);
 };
 
 
