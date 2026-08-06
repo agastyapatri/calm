@@ -34,8 +34,9 @@ std::cout << response.content << std::endl;
 2.  DONE: ~Build the first request: figure out what is needed from `libcpr` to build the first GET request to OpenRouter~
 3.  UNDERWAY: build `calm::ChatModel` as a wrapper around the OpenRouter API. Include more methods in the `ChatOpenRouter` class which interact with some cool endpoints.  
     
-    Figure out how to send individual `std::string messages`  to `ChatModel.invoke()`
-
+    DONE: ~Figure out how to send individual `std::string messages`  to `ChatModel.invoke()`~ 
+    
+    Figure out how to send both user and system prompts at the same time. 
 
 The immediate reason to seperate the different model providers into their own `ChatModel` subclasses is that they all probably have their own API endpoints which need to be treated differently (especially when building the JSON payload for each). 
 
