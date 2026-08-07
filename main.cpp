@@ -15,12 +15,13 @@ int main(){
 		std::cerr << "Environment variables not loaded, CALM_STATUS: " << status << "\n";
 	}
 	std::string API_KEY    = std::getenv("OPENROUTER_API_KEY");
-	std::string MODEL_NAME = std::getenv("NEMOTRON_3_NANO");
+	std::string MODEL_NAME = std::getenv("GEMMA_4_31B");
 	std::string BASE_URL   = std::getenv("BASE_URL");
 
-	calm::ChatModel model(API_KEY, MODEL_NAME, BASE_URL, TEMPERATURE, MAX_TOKENS);
-	std::string r = model.invoke("Hello, What is your name?");
-	std::cout << r << std::endl;
+	calm::Model model(API_KEY, MODEL_NAME, BASE_URL, TEMPERATURE, MAX_TOKENS);
+	calm::Response r = model.invoke("Hello, What is your name?");
+
+
 
 
 

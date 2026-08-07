@@ -27,7 +27,7 @@ CALM_STATUS load_dotenv(std::string path_to_env){
 }
 
 
-std::string ChatModel::invoke(std::string content){
+Response Model::invoke(std::string content){
 	std::string chat_completion_endpoint = _base_url + "chat/completions";
 
 	json payload;
@@ -48,26 +48,39 @@ std::string ChatModel::invoke(std::string content){
 		req_header, 
 		req_body
 	);
-
-
-
-
-
-
-
-
-	return r.text;
-
-
+	return Response(r);
 }
 
-
-
-cpr::Response ChatModel::list_models(){
+Response Model::list_models(){
 	std::string models_endpoint = _base_url + "models";
 	cpr::Response r = cpr::Get(cpr::Url(models_endpoint));
-	return r;
+	return Response(r);
 }
+
+
+
+Response::Response(cpr::Response response){
+	_status_code = response.status_code;
+	_content 	 = response.text; 
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

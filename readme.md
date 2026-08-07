@@ -43,3 +43,6 @@ The immediate reason to seperate the different model providers into their own `C
 I need to have a  stricter documentation of the status codes of the responses from the OpenRouter API. I need a strict error handling system based on the status codes, right now things are failing silently. This would mean death if anything is built upon this code.
 
 
+
+4.  `calm::Response` needs to be built as a wrapper around `cpr::Response`. Parse the output JSON payload with `json.hpp` to extract all that is relevant. Look to `AIMessage, HumanMessage, SystemMessage` for inspiration.
+5.  `calm::Response calm::Model::invoke(std::unordered_map<std::string, std::string>);` is needed. 
